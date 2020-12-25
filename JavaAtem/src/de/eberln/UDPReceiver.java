@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 
 public class UDPReceiver extends Thread {
 
@@ -30,7 +31,12 @@ public class UDPReceiver extends Thread {
 				e.printStackTrace();
 			}
             
-            Atem.sendMessage(packet);
+				try {
+					Atem.handleSocketData(packet);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
     }
 }

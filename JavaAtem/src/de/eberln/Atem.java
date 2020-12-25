@@ -4,12 +4,19 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class Atem {
 
 	static DatagramSocket socket;
 	
+	private static String CMD_HELLO = "1014";
+	
+	private static boolean isInitialized;
+	
 	public static void main(String[] args) throws IOException {
+		
+		isInitialized = false;
 		
 		socket = new DatagramSocket(9910);
 		
@@ -28,10 +35,22 @@ public class Atem {
 		socket.send(dpacket);
 	}
 	
-	public static void sendMessage(DatagramPacket packet) {
+	
+	
+	public static void handleSocketData(DatagramPacket packet) throws IOException {
 		System.out.println("Neues Paket");
-		System.out.println(parseCommandHeader(packet.getData()));
+		
+		String[] socketData = parseCommandHeader(packet.getData());
+		
+		if(socketData[0].equals(CMD_HELLO)) {
+			Packet p = new Packet("800c", "1337", "00");
+			DatagramPacket dpacket = new DatagramPacket(p.getDatagramPacket(), p.getDatagramPacket().length, InetAddress.getByName("192.168.10.240"), 9910);
+			socket.send(dpacket);
+		}
+		
 	}
+	
+	
 	
 	public static String[] parseCommandHeader(byte[] packet) {
 		
