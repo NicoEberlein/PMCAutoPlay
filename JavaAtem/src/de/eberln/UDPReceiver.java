@@ -11,7 +11,7 @@ public class UDPReceiver extends Thread {
 
     private DatagramSocket socket;
     private boolean running;
-    private byte[]buf = new byte[1024];
+    private byte[]buf = new byte[1500];
 
     public UDPReceiver(DatagramSocket socket) throws SocketException {
         this.socket = socket;
@@ -23,20 +23,17 @@ public class UDPReceiver extends Thread {
         while (running) {
             DatagramPacket packet
               = new DatagramPacket(buf, buf.length);
-            try {
-				socket.receive(packet);
-
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
             
-				try {
-					Atem.handleSocketData(packet);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+            try {
+            	
+				socket.receive(packet);
+				Atem.handleSocketData(packet);
+				
+			} catch (IOException e) {
+				
+				e.printStackTrace();
+				
+			}
 		}
     }
 }

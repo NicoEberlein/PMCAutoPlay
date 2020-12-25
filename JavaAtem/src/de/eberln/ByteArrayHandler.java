@@ -2,6 +2,8 @@ package de.eberln;
 
 public class ByteArrayHandler {
 
+	//Konvertiert einen 2 oder 4 langen String zu einem zwei langen Byte Array. Sollte der String nur zwei lang sein wird die erste Stelle des Byte Arrays mit 0x00 aufgefüllt.
+	
 	public static byte[] convertStringToByteArray(String s) {
 		
 		byte[] result = new byte[2];
@@ -25,6 +27,8 @@ public class ByteArrayHandler {
 		}
 		
 	}
+	
+	//Verbindet 2,3 oder 4 Byte Arrays
 	
 	public static byte[] connectByteArrays(byte[] first, byte[] second, byte[] third, byte[] fourth) {
 		byte[] connectedByteArray = new byte[first.length + second.length + third.length + fourth.length];
@@ -56,6 +60,7 @@ public class ByteArrayHandler {
 	}
 
 	
+	//Stellt sicher, dass das Outputarray immer die Länge length hat, sollte es kürzer sein. Es werden entsprechend viele Bytes 0x00 hinzugefügt
 	
 	public static byte[] formatDatagramPacketLength(byte[] oldHeader, int length) {
 		
@@ -74,6 +79,17 @@ public class ByteArrayHandler {
 		}else{
 			return oldHeader;
 		}
+	}
+	
+	public static byte[] removeHeader(byte[] datagram) {
+		byte[] datagramWithoutHeader = new byte[datagram.length-12];
+		
+		for(int i=0;i<datagramWithoutHeader.length;i++) {
+			datagramWithoutHeader[i] = datagram[i+12];
+		}
+		
+		return datagramWithoutHeader;
+		
 	}
 	
 	
