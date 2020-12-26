@@ -20,13 +20,16 @@ public class Atem {
 	
 	private static boolean isInitialized;
 	
-	public static void main(String[] args) throws IOException {
+	public static int[][] channels = new int[8][2];
+	
+	public static void main(String[] args) throws IOException, InterruptedException {
 		
 		isInitialized = false;
 		
 		socket = new DatagramSocket(9910);
 		
 		UDPReceiver udp = new UDPReceiver(socket);
+		Thread.sleep(2000);
 		udp.start();
 		
 		connectToAtem();
@@ -64,16 +67,24 @@ public class Atem {
 		}else if(socketData[0].equals("0930") || socketData[0].equals("0894") || socketData[0].equals("0D8C")) {
 			String typeOfContent = null;
 			byte[] payload = ByteArrayHandler.removeHeader(data);
+			byte[] currentPacket = null;
+			int size = 0;
 			
 			do {
-				System.out.println(payload[0] + " " + payload[1]);
-				int size = (int) (new Byte(payload[0] + "" + payload[1]) & 0xFF);
-				typeOfContent = new String(Arrays.copyOfRange(payload, 4, 7), StandardCharsets.UTF_8);
+				
+				String sizeString = ByteArrayHandler.convertByteToHexString(payload[0]) + ByteArrayHandler.convertByteToHexString(payload[1]);
+				size = Integer.parseInt(sizeString, 16);
+				
+				typeOfContent = new String(Arrays.copyOfRange(payload, 4, 8), StandardCharsets.UTF_8);
+				
+				currentPacket = Arrays.copyOfRange(payload, 0, size);
+				
 				payload = Arrays.copyOfRange(payload, size, payload.length);
-			}while(!typeOfContent.equals("TlIn") || (int) payload[0] + (int) payload[1] == 0);
+				
+			}while(!typeOfContent.equalsIgnoreCase("TlIn") && size != 0);
 			
 			if(typeOfContent.equals("TlIn")) {
-				System.out.println("TlIn gefunden!");
+				parseTlInPacket(currentPacket);
 			}
 		}
 	}
@@ -116,5 +127,26 @@ public class Atem {
 		}
 		
 		return numberArray;
+	}
+	
+	public static void parseTlInPacket(byte[] payload) {
+		
+		byte[] data = Arrays.copyOfRange(payload, 10, 18);
+		int i=1;
+		for(byte b : data) {
+			if(Byte.toUnsignedInt(b) == 1) {
+				System.out.println("Prg: " + i);
+				channels[i-1][0] = 1;
+			}else if(Byte.toUnsignedInt(b) == 2) {
+				System.out.println("Prv: " + i);
+				channels[i-1][1] = 1;
+			}else if(Byte.toUnsignedInt(b) == 3) {
+				System.out.println("Prg: " + i);
+				System.out.println("Prv: " + i);
+				channels[i-1][0] = 1;
+				channels[i-1][1] = 1;
+			}
+			i++;
+		}
 	}
 }

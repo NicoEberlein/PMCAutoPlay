@@ -92,6 +92,8 @@ public class ByteArrayHandler {
 		
 	}
 	
-	
+	public static String convertByteToHexString(byte b) {
+		return String.format("%02X", b);
+	}
 	
 }
