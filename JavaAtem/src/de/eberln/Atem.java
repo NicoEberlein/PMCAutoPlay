@@ -18,13 +18,9 @@ public class Atem {
 	
 	private static String uid = "1337";
 	
-	private static boolean isInitialized;
-	
 	public static int[][] channels = new int[8][2];
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
-		
-		isInitialized = false;
 		
 		socket = new DatagramSocket(9910);
 		
