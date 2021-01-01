@@ -32,6 +32,18 @@ public class Atem {
 	
 	}
 	
+	public static void startAtemListener() throws InterruptedException, IOException {
+		
+		socket = new DatagramSocket(9910);
+		
+		UDPReceiver udp = new UDPReceiver(socket);
+		Thread.sleep(2000);
+		udp.start();
+		
+		connectToAtem();
+		
+	}
+	
 	
 	public static void connectToAtem() throws IOException {
 		
